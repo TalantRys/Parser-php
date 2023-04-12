@@ -1,7 +1,8 @@
-<?
+<?php
 set_time_limit(0);
 ini_set('memory_limit', -1);
 
+require '../connect.php';
 require '../autoload.php';
 require 'function.php';
 
@@ -19,11 +20,10 @@ sleep(rand(1, 3));
 
 $team_data = get_team($document, $client);
 
-//СОХРАНЕНИЕ JSON
 
-file_put_contents(
-  '../../assets/data/team.json', json_encode($team_data, JSON_UNESCAPED_UNICODE)
-);
 // ОТПРАВКА JSON-ОТВЕТА
 header('Content-type: application/json');
-echo json_encode($team_data, JSON_UNESCAPED_UNICODE);
+echo json_encode([
+  'team' => $team_data,
+  //'players' => $players_data
+], JSON_UNESCAPED_UNICODE);

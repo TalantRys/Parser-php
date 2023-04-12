@@ -35,8 +35,14 @@ body {
 
 .title {
   font-weight: 700;
+  display: flex;
+  align-items: center;
 }
-
+.title a{
+  font-weight: 400;
+  margin-left: 10px;
+  font-size: 14px;
+}
 .img {
   width: 25px;
 }
@@ -72,22 +78,22 @@ body {
 .players__container{
   max-width: 1000px;
 }
-.weather__row {
+.team__row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 20px;
 }
 
-.weather__icon {
+.team__icon {
   margin-right: 10px;
 }
 
-.weather__button:hover .weather__icon {
+.team__button:hover .team__icon {
   animation: rotate .3s ease;
 }
 
-.weather__button._loading .weather__icon {
+.team__button._loading .team__icon {
   animation: rotate 2s linear infinite;
 }
 
@@ -97,11 +103,11 @@ body {
   }
 }
 
-.weather-table__wrapper {
+.team-table__wrapper {
   overflow-x: auto;
 }
 
-.weather-table {
+.team-table {
   width: 100%;
   background-color: #fff;
   border-spacing: 0;
@@ -110,34 +116,34 @@ body {
   border-radius: 10px;
 }
 
-.weather-table tr {
+.team-table tr {
   text-align: center;
 }
 
-.weather-table thead {
+.team-table thead {
   box-shadow: 0 10px 8px rgba(2, 27, 49, 0.2);
   position: relative;
   z-index: 2;
   height: 70px;
 }
 
-.weather-table thead th {
+.team-table thead th {
   padding: 0 10px;
 }
 
-.weather-table tbody tr:nth-child(odd) {
+.team-table tbody tr:nth-child(odd) {
   background-color: var(--color-gray);
 }
 
-.weather-table tbody td {
+.team-table tbody td {
   padding: 20px 10px;
 }
 
-.weather-table tbody {
+.team-table tbody {
   position: relative;
 }
 
-.weather-table tbody::before {
+.team-table tbody::before {
   transition: all .3s ease;
   position: absolute;
   content: '';
@@ -149,18 +155,18 @@ body {
   visibility: hidden;
 }
 
-.weather-table tbody._loading::before {
+.team-table tbody._loading::before {
   opacity: 1;
   visibility: visible;
 }
-.weather-table__link{
+.team-table__link{
   text-align: left;
 }
-.weather-table__link a{
+.team-table__link a{
   display: inline-flex;
   align-items: center;
 }
-.weather-table__img {
+.team-table__img {
   min-width: 70px;
   margin: 0 20px 0 0;
 }

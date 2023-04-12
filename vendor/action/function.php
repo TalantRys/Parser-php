@@ -1,4 +1,4 @@
-<?
+<?php require '../connect.php';
 
 use DiDom\Document;
 use GuzzleHttp\Client;
@@ -11,6 +11,7 @@ function get_html($url, Client $client)
 
 function get_team(Document $document, Client $client)
 {
+  global $link;
   global $url;
   $table_row = $document->find('#tournaments-tables-table-0 .custom-table__row');
   for ($i = 0; $i < count($table_row); $i++) {
@@ -25,8 +26,22 @@ function get_team(Document $document, Client $client)
     $draw[$i] = trim($table_row[$i]->find('.custom-table__var')[2]->text());
     $lost[$i] = trim($table_row[$i]->find('.custom-table__var')[3]->text());
 
+    $sql = $link->query("SELECT * FROM `team` WHERE `id` = '$id[$i]'");
+    if ($sql->num_rows == 0){
+      $link->query(
+        "INSERT INTO `team`(`id`, `name`, `games`, `win`, `draw`, `lost`, `icon_link`, `team_link`)
+         VALUES ('$id[$i]','$team_name[$i]','$games[$i]','$win[$i]','$draw[$i]','$lost[$i]','$icon_link[$i]','$url.$team_link[$i]')"
+      ) or die($link->error);
+    } else {
+      $link->query(
+        "UPDATE `team`
+         SET `id`='$id[$i]',`name`='$team_name[$i]',`games`='$games[$i]',
+         `win`='$win[$i]',`draw`='$draw[$i]',`lost`='$lost[$i]',
+         `icon_link`='$icon_link[$i]',`team_link`='$url.$team_link[$i]'
+         WHERE `id` = '$id[$i]'"
+      ) or die($link->error);
+    }
     get_players($document, $client, $url . $team_link[$i]);
-
     $array[$i] = [
       'id' => $id[$i],
       'icon_link' => $icon_link[$i],
@@ -43,6 +58,7 @@ function get_team(Document $document, Client $client)
 
 function get_players(Document $document, Client $client, $team_url)
 {
+  global $link;
   global $url;
   static $team_id = 1;
   sleep(rand(1, 3));
@@ -69,20 +85,36 @@ function get_players(Document $document, Client $client, $team_url)
     } else{
       $http = $img_link[$i];
     }
-
-    $array[$i] = [
-      'number' => $number[$i],
-      'amplua' => $amplua[$i],
-      'name' => $name[$i],
-      'img_link' => $http,
-      'player_link' => $url.$player_link[$i],
-      'birthday' => $birthday[$i],
-      'games' => $games[$i],
-      'goals' => $goals[$i],
-      'assists' => $assists[$i],
-      'yellow_card' => $yellow_card[$i],
-      'red_card' => $red_card[$i]
-    ];
+    $sql = $link->query("SELECT * FROM `players` WHERE `name` = '$name[$i]'");
+    if ($sql->num_rows == 0) {
+      $link->query(
+        "INSERT INTO `players`(`id`, `team_id`, `number`, `amplua`, `name`, `birthday`, `games`, `goals`, `assists`, `yellow_card`, `red_card`, `player_link`, `img_link`)
+         VALUES (NULL,'$team_id','$number[$i]','$amplua[$i]','$name[$i]','$birthday[$i]','$games[$i]','$goals[$i]','$assists[$i]','$yellow_card[$i]','$red_card[$i]','$url.$player_link[$i]','$http')"
+      ) or die($link->error);
+    } else {
+      $link->query(
+        "UPDATE `players`
+         SET `team_id`='$team_id', `number`='$number[$i]',`amplua`='$amplua[$i]',
+         `name`='$name[$i]',`birthday`='$birthday[$i]',`games`='$games[$i]',`goals`='$goals[$i]',
+         `assists`='$assists[$i]',`yellow_card`='$yellow_card[$i]',`red_card`='$red_card[$i]',
+         `player_link`='$url.$player_link[$i]',`img_link`='$http'
+         WHERE `name` = '$name[$i]'"
+      ) or die($link->error);
+    }
+    // $array[$i] = [
+    //   'number' => $number[$i],
+    //   'amplua' => $amplua[$i],
+    //   'name' => $name[$i],
+    //   'img_link' => $http,
+    //   'player_link' => $url.$player_link[$i],
+    //   'birthday' => $birthday[$i],
+    //   'games' => $games[$i],
+    //   'goals' => $goals[$i],
+    //   'assists' => $assists[$i],
+    //   'yellow_card' => $yellow_card[$i],
+    //   'red_card' => $red_card[$i]
+    // ];
   }
-  file_put_contents('../../assets/data/'.$team_id++.'.json', json_encode($array, JSON_UNESCAPED_UNICODE));
+  $team_id++;
+  //return $array;
 }
